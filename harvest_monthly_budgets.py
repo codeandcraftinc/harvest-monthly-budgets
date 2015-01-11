@@ -15,7 +15,7 @@ Projects with monthly budgets need to fulfill two requirements:
 
 An example crontab entry would be:
 
-    0 1 1 * * SLUG=sample USERNAME=example@example.com PASSWORD=xyz /path/to/harvest_monthly_budgets.py
+    0 1 1 * * MAILGUN_API_KEY=some_key MAILGUN_DOMAIN=mg.example.com NOTIFY=someone@needstoknow.com SLUG=sample USERNAME=example@example.com PASSWORD=xyz /path/to/harvest_monthly_budgets.py
 
 Uses the "requests" library (http://pypi.python.org/pypi/requests)
 '''
@@ -26,8 +26,13 @@ import datetime
 import requests
 import json
 
+LOG = []
+
 def log(message, sub=False):
-  print ('----> ' if sub else '==> ') + message
+  global LOG
+  LOG.append(('----> ' if sub else '==> ') + message)
+  print LOG[-1]
+
 
 REQUEST_HEADERS = {
   'auth': (os.environ['USERNAME'], os.environ['PASSWORD']),
@@ -105,4 +110,13 @@ for p in projects:
     r = requests.put('%s/%s/toggle' % (BASE_URL, pid), **REQUEST_HEADERS)
     if r.status_code != 200:
       log('could not archive old project <%s>' % pid, True)
+
+# send email log
+requests.post(
+  "https://api.mailgun.net/v2/%s/messages" % os.environ['MAILGUN_DOMAIN'],
+  auth=("api", os.environ['MAILGUN_API_KEY']),
+  data={"from": "Code & Craft Cron <no-reply@codeandcraft.nyc>",
+        "to": os.environ['NOTIFY'],
+        "subject": "Webfaction Cron: Harvest Monthly Budgets",
+        "text": "\r\n".join(LOG) })
 
