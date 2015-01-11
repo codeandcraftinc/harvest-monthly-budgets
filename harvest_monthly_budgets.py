@@ -112,11 +112,12 @@ for p in projects:
       log('could not archive old project <%s>' % pid, True)
 
 # send email log
-requests.post(
-  "https://api.mailgun.net/v2/%s/messages" % os.environ['MAILGUN_DOMAIN'],
-  auth=("api", os.environ['MAILGUN_API_KEY']),
-  data={"from": "Code & Craft Cron <no-reply@codeandcraft.nyc>",
-        "to": os.environ['NOTIFY'],
-        "subject": "Webfaction Cron: Harvest Monthly Budgets",
-        "text": "\r\n".join(LOG) })
+if len(LOG):
+  requests.post(
+    "https://api.mailgun.net/v2/%s/messages" % os.environ['MAILGUN_DOMAIN'],
+    auth=("api", os.environ['MAILGUN_API_KEY']),
+    data={"from": "Code & Craft Cron <no-reply@codeandcraft.nyc>",
+          "to": os.environ['NOTIFY'],
+          "subject": "Webfaction Cron: Harvest Monthly Budgets",
+          "text": "\r\n".join(LOG) })
 
