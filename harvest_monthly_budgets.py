@@ -91,7 +91,7 @@ for p in projects:
     for u in users:
       new_user = { 'user': { 'id': u['user_assignment']['user_id'] } }
       log('adding user <%s> to new project <%s>' % (new_user['user']['id'], new_pid), True)
-      r = requests.post('%s/%s/user_assignments' % (BASE_URL, pid), data=json.dumps(new_user), **REQUEST_HEADERS)
+      r = requests.post('%s/%s/user_assignments' % (BASE_URL, new_pid), data=json.dumps(new_user), **REQUEST_HEADERS)
       if r.status_code != 201:
         log('could not assign user <%s> to new project <%s>' % (new_user['user']['id'], new_pid), True)
 
@@ -101,7 +101,7 @@ for p in projects:
     for t in tasks:
       new_task = { 'task': { 'id': t['task_assignment']['task_id'] } }
       log('adding task <%s> to new project <%s>' % (new_task['task']['id'], new_pid), True)
-      r = requests.post('%s/%s/task_assignments' % (BASE_URL, pid), data=json.dumps(new_task), **REQUEST_HEADERS)
+      r = requests.post('%s/%s/task_assignments' % (BASE_URL, new_pid), data=json.dumps(new_task), **REQUEST_HEADERS)
       if r.status_code != 201:
         log('could not add task <%s> to new project <%s>' % (new_task['task']['id'], new_pid), True)
 
